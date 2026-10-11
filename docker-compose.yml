@@ -1,0 +1,29 @@
+# rinjing-agen — satu agen per server fisik. Panduan: README.md §Pasang.
+#
+#   cp .env.example .env   # isi node, token, IP Rinjing utama
+#   docker compose up -d --build
+services:
+  agen:
+    build:
+      context: .
+      args:
+        VERSION: ${AGENT_VERSION:-dev}
+    image: rinjing-agen:local
+    container_name: rinjing-agen
+    restart: unless-stopped
+    # host network: allowlist melihat IP asli Rinjing utama (bukan IP NAT Docker), tanpa
+    # membuat network Docker baru. AGENT_LISTEN di .env menentukan IP:port yang dibuka.
+    network_mode: host
+    env_file: .env
+    environment:
+      AGENT_DATA_DIR: /data
+    volumes:
+      # disk LOKAL host ini — jangan storage bersama lintas host (Ceph/NFS), zona jadi tak bermakna
+      - ${AGENT_DATA_PATH:-/data/rinjing-agen}:/data
+      - ./certs:/certs:ro
+    stop_grace_period: 40s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"

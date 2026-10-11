@@ -1,0 +1,7 @@
+.env
+certs/
+/rinjing-agen
+*.exe
+*.test
+*.out
+coverage.*
