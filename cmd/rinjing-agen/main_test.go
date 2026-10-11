@@ -47,6 +47,12 @@ func TestHealthcheck(t *testing.T) {
 	if err := healthcheck(":"+u.Port(), false); err != nil {
 		t.Fatal(err)
 	}
+	if err := healthcheck("127.0.0.1:"+u.Port(), false); err != nil {
+		t.Fatalf("IP spesifik: %v", err)
+	}
+	if err := healthcheck("10.255.255.1:"+u.Port(), false); err == nil {
+		t.Fatal("harus memanggil IP yang didengar, bukan selalu loopback")
+	}
 	down := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}))

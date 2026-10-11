@@ -16,10 +16,10 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
@@ -71,11 +71,15 @@ func newToken(out io.Writer) error {
 	return err
 }
 
-// healthcheck — GET /healthz ke agen di mesin yang sama.
+// healthcheck — GET /healthz ke agen di mesin yang sama, di alamat yang benar-benar didengar
+// (AGENT_LISTEN=10.10.10.60:9100 tidak menjawab di 127.0.0.1).
 func healthcheck(listen string, useTLS bool) error {
-	port := "9100"
-	if i := strings.LastIndex(listen, ":"); i >= 0 && i+1 < len(listen) {
-		port = listen[i+1:]
+	host, port, err := net.SplitHostPort(listen)
+	if err != nil || port == "" {
+		host, port = "", "9100"
+	}
+	if host == "" || host == "0.0.0.0" || host == "::" {
+		host = "127.0.0.1"
 	}
 	scheme := "http"
 	hc := &http.Client{Timeout: 5 * time.Second}
@@ -84,7 +88,7 @@ func healthcheck(listen string, useTLS bool) error {
 		// sertifikat diterbitkan untuk IP/nama agen, bukan 127.0.0.1; yang dicek hanya "hidup"
 		hc.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}} //nolint:gosec // loopback
 	}
-	resp, err := hc.Get(scheme + "://127.0.0.1:" + port + "/healthz")
+	resp, err := hc.Get(scheme + "://" + net.JoinHostPort(host, port) + "/healthz")
 	if err != nil {
 		return err
 	}
