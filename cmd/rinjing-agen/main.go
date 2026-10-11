@@ -3,6 +3,7 @@
 //	rinjing-agen              jalankan server (konfigurasi dari env, lihat .env.example)
 //	rinjing-agen token        buat AGENT_TOKEN acak
 //	rinjing-agen healthcheck  cek /healthz lokal (dipakai HEALTHCHECK Docker)
+//	rinjing-agen probe        uji ujung-ke-ujung agen lain (AGENT_PROBE_URL, AGENT_NODE_CODE, AGENT_TOKEN)
 //	rinjing-agen version
 package main
 
@@ -52,11 +53,13 @@ func run(ctx context.Context, cmd string, out io.Writer) error {
 		return newToken(out)
 	case "healthcheck":
 		return healthcheck(os.Getenv("AGENT_LISTEN"), os.Getenv("AGENT_TLS_CERT") != "")
+	case "probe":
+		return probe(ctx, os.Getenv, out)
 	case "version":
 		_, err := fmt.Fprintln(out, version)
 		return err
 	}
-	return fmt.Errorf("perintah %q tidak dikenal (token | healthcheck | version)", cmd)
+	return fmt.Errorf("perintah %q tidak dikenal (token | healthcheck | probe | version)", cmd)
 }
 
 func newToken(out io.Writer) error {

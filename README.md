@@ -67,7 +67,21 @@ docker compose ps             # STATUS: healthy
 docker compose logs --tail 20
 ```
 
-**Cek dari Rinjing utama:** `curl http://<IP-agen>:9100/healthz` → `ok`.
+**Cek dari Rinjing utama:**
+
+```bash
+curl http://<IP-agen>:9100/healthz        # → ok (hanya "hidup", tanpa autentikasi)
+
+# uji penuh: tanda tangan, unggah 8 MiB acak, baca balik & bandingkan, verify, hapus
+cat > /tmp/probe.env <<EOF
+AGENT_PROBE_URL=http://<IP-agen>:9100
+AGENT_NODE_CODE=<kode node agen>
+AGENT_TOKEN=<token agen>
+EOF
+docker run --rm --network host --env-file /tmp/probe.env rinjing-agen:local probe; rm /tmp/probe.env
+```
+
+Harus diakhiri `PROBE LULUS`. Shard uji selalu dihapus, juga bila ada langkah yang gagal.
 
 Simpan `AGENT_NODE_CODE`, IP:port, dan `AGENT_TOKEN`. Ketiganya didaftarkan di Rinjing utama
 (console **Node**, fase C2). Token adalah rahasia: jangan dikirim lewat chat, simpan di password

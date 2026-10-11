@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"io"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +12,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/Onelabs9157/rinjing-agen/internal/server"
+	"github.com/Onelabs9157/rinjing-agen/store"
 )
 
 func TestPerintah(t *testing.T) {
@@ -97,5 +102,39 @@ func TestServeBerhentiRapi(t *testing.T) {
 	defer tcancel()
 	if err := serve(tctx, func(k string) string { return env[k] }); err == nil {
 		t.Fatal("port bentrok harus galat")
+	}
+}
+
+func TestProbe(t *testing.T) {
+	st, err := store.Open(t.TempDir(), "NODE_UJI")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok := strings.Repeat("k", 40)
+	srv := httptest.NewServer((&server.Server{Store: st, Token: tok, Version: "uji",
+		Log: slog.New(slog.NewTextHandler(io.Discard, nil))}).Handler())
+	defer srv.Close()
+	env := map[string]string{"AGENT_PROBE_URL": srv.URL, "AGENT_NODE_CODE": "NODE_UJI", "AGENT_TOKEN": tok, "AGENT_PROBE_SIZE": "2500KiB"}
+	get := func(k string) string { return env[k] }
+	var out bytes.Buffer
+	if err := probe(context.Background(), get, &out); err != nil || !strings.Contains(out.String(), "PROBE LULUS") {
+		t.Fatalf("probe: %v — %s", err, out.String())
+	}
+	if l, _, _ := st.List(context.Background(), "", 0); len(l) != 0 {
+		t.Fatalf("shard uji tertinggal: %v", l)
+	}
+	env["AGENT_TOKEN"] = strings.Repeat("x", 40)
+	if err := probe(context.Background(), get, &out); err == nil || !strings.Contains(err.Error(), "health") {
+		t.Fatalf("token salah: %v", err)
+	}
+	env["AGENT_PROBE_SIZE"] = "banyak"
+	if err := probe(context.Background(), get, &out); err == nil {
+		t.Fatal("ukuran tidak sah")
+	}
+	if err := probe(context.Background(), func(string) string { return "" }, &out); err == nil {
+		t.Fatal("tanpa konfigurasi")
+	}
+	if human(0, false) != "tidak diketahui" || human(3<<30, true) != "3.0 GiB" || !strings.Contains(rate(1e6, 0), "MB/s") {
+		t.Fatal("format angka")
 	}
 }
