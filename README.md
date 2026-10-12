@@ -36,6 +36,8 @@ mengimpornya sebagai modul Go pada versi tag tertentu, jadi kodenya tidak disali
 
 ## Pasang di server baru
 
+> **Checklist lengkap + pemecahan masalah: [INSTALL.md](INSTALL.md).** Ringkasannya di bawah.
+
 **Syarat**
 - VM/server di **host fisik yang belum punya agen**. Dua agen di satu host fisik = satu zona; hal itu
   tidak menambah ketahanan.
