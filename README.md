@@ -27,7 +27,7 @@ enkripsi sistem. Rancangan lengkap: `docs/plan-cluster.md` di repo Rinjing.
 | [`shard/`](shard/) | format file shard & format di jaringan (frame per blok + CRC32C) | agen **dan** Rinjing utama |
 | [`protocol/`](protocol/) | API `/v1`, tanda tangan request HMAC, tipe JSON, klien Go | agen **dan** Rinjing utama |
 | [`store/`](store/) | penyimpanan shard di disk (atomik, fsync, verifikasi) | agen, dan Rinjing utama yang ikut menyimpan shard |
-| `internal/server/` | handler HTTP | agen |
+| [`server/`](server/) | handler HTTP | agen, dan test integrasi Rinjing utama |
 | `internal/config/` | konfigurasi dari env | agen |
 | `cmd/rinjing-agen/` | binary | agen |
 

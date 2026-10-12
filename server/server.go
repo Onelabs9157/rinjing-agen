@@ -1,4 +1,5 @@
-// Package server — HTTP API agen /v1 (kontrak di paket protocol).
+// Package server — HTTP API agen /v1 (kontrak di paket protocol). Publik supaya Rinjing utama
+// bisa menjalankan agen sungguhan di dalam test integrasinya.
 package server
 
 import (

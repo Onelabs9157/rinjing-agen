@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Onelabs9157/rinjing-agen/internal/server"
+	"github.com/Onelabs9157/rinjing-agen/server"
 	"github.com/Onelabs9157/rinjing-agen/store"
 )
 

@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/Onelabs9157/rinjing-agen/internal/config"
-	"github.com/Onelabs9157/rinjing-agen/internal/server"
+	"github.com/Onelabs9157/rinjing-agen/server"
 	"github.com/Onelabs9157/rinjing-agen/store"
 )
 

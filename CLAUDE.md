@@ -16,12 +16,12 @@ bucket/objek, access key, atau kunci enkripsi sistem.
 shard/       KONTRAK — format file & jaringan (header 64 B, blok, CRC32C, tail; frame per blok)
 protocol/    KONTRAK — API /v1, tanda tangan RJ1 (HMAC-SHA256), tipe JSON, header meta, klien Go
 store/       penyimpanan disk: tmp → fsync → rename → fsync dir; penanda folder per node
-internal/server/  handler HTTP (net/http, pola Go 1.22), allowlist IP + verifikasi tanda tangan
+server/           handler HTTP (net/http, pola Go 1.22), allowlist IP + verifikasi tanda tangan — publik untuk test integrasi Rinjing
 internal/config/  env → Config
 cmd/rinjing-agen/ main: serve | token | healthcheck | version
 ```
 
-`shard`, `protocol`, dan `store` publik karena diimpor Rinjing utama
+`shard`, `protocol`, `store`, dan `server` publik karena diimpor Rinjing utama
 (`github.com/Onelabs9157/rinjing-agen/...`).
 
 ## Kontrak (wajib dibaca sebelum mengubah `shard/` atau `protocol/`)
